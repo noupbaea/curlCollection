@@ -107,6 +107,7 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, out)
         except m.ApiError as e:
             msg = "The product service is busy. Try again later." if e.status in (401, 403, 429) else "The product service is unavailable."
+            self.log(f"recommend API error: status={e.status} hair_type={ht} porosity={po}")
             self.reply(502, {"error": msg})
 
     def do_browse(self, d):
@@ -132,7 +133,13 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply(400, {"error": "Bad request."})
         except m.ApiError as e:
             msg = "The product service is busy. Try again later." if e.status in (401, 403, 429) else "The product service is unavailable."
+            self.log(f"browse API error: status={e.status}")
             self.reply(502, {"error": msg})
+
+    def log(self, text):
+        """Write a line to stderr so it shows up in Render's Logs tab."""
+        import sys
+        print(f"[{self.log_date_time_string()}] {text}", file=sys.stderr, flush=True)
 
     def log_message(self, *a):
         pass
