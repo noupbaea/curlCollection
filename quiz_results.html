@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz" class="active">Quiz</a><a href="/browse">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro">
+      <h2>Results</h2>
+      <p class="crumb" id="crumb"></p>
+    </section>
+    <div id="status" class="empty">Finding products for your hair…</div>
+    <ol class="results-list" id="results"></ol>
+    <div class="nav-row">
+      <a class="back" href="/quiz/avoid">← Back</a>
+      <a class="back" href="/quiz">Start over</a>
+    </div>
+  </main>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script src="/assets/quiz.js"></script>
+<script>
+const s = Quiz.init([]);
+const cap = x => x ? x.charAt(0).toUpperCase() + x.slice(1) : "";
+const concerns = Array.isArray(s.concerns) ? s.concerns.filter(Boolean) : [];
+const cats = s.any === "1" || !s.category ? [] : (Array.isArray(s.category) ? s.category : [s.category]);
+const excluded = [s.no_sulphates === "true" && "sulphates", s.no_silicones === "true" && "silicones", s.no_parabens === "true" && "parabens"].filter(Boolean);
+
+// Professional summary in the format: 2A > Low Porosity > Dryness Concern > Any Products > Max 8 USD
+const catLabels = { shampoo:"Shampoo", conditioner:"Conditioner", leave_in:"Leave-in", oil:"Oil", styler:"Styler", ayurvedic:"Ayurvedic" };
+const capEach = x => x.split(/[\s_-]+/).map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : "").join(" ");
+const parts = [];
+if (s.hair_type && s.porosity) {
+  parts.push(`${s.hair_type} > ${cap(s.porosity)} Porosity`);
+  if (concerns.length) parts.push(`${formatList(concerns.map(capEach))} Concern`);
+  parts.push(cats.length ? `${formatList(cats.map(c => catLabels[c] || capEach(c))) } Products` : "Any Products");
+  if (s.budget) parts.push(`Max ${s.budget} ${s.currency || "USD"}`);
+}
+document.getElementById("crumb").textContent = parts.length ? parts.join(" > ") : "No criteria selected yet.";
+
+function formatList(arr) {
+  if (arr.length === 0) return "";
+  if (arr.length === 1) return arr[0];
+  if (arr.length === 2) return arr[0] + " and " + arr[1];
+  return arr.slice(0, -1).join(", ") + ", and " + arr[arr.length - 1];
+}
+
+const safe = u => /^https?:\/\//i.test(u || "") ? u : null;
+const results = document.getElementById("results");
+function addResult(r) {
+  const li = document.createElement("li");
+  const img = document.createElement("img");
+  const u = safe(r.image);
+  img.className = "r-img";
+  img.alt = "";
+  if (u) { img.src = u; img.referrerPolicy = "no-referrer"; img.loading = "lazy"; }
+  else img.style.background = "#d9d9d9";
+  const box = document.createElement("div");
+  const name = document.createElement("h3"); name.className = "r-name"; name.textContent = r.name || "Unnamed product";
+  const meta = document.createElement("p"); meta.className = "r-meta";
+  meta.textContent = [r.brand, r.category && r.category.replace("_", "-"), r.price].filter(Boolean).join(", ");
+  const desc = document.createElement("p"); desc.className = "r-desc"; desc.textContent = r.description || "";
+  box.append(name, meta, desc);
+  const tags = document.createElement("div"); tags.className = "r-tags";
+  if (r.black_owned) { const t = document.createElement("span"); t.className = "r-tag"; t.textContent = "Black-owned brand"; tags.appendChild(t); }
+  (r.matched || []).forEach(mg => { const t = document.createElement("span"); t.className = "r-tag"; t.textContent = "Helps with " + mg; tags.appendChild(t); });
+  box.appendChild(tags);
+  if (safe(r.buy_url)) { const a = document.createElement("a"); a.className = "r-buy"; a.href = r.buy_url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "View product"; box.appendChild(a); }
+  li.append(img, box);
+  return li;
+}
+
+(async () => {
+  const body = {
+    hair_type: s.hair_type || "",
+    porosity: s.porosity || "",
+    concerns,
+    category: cats[0] || "",
+    budget: s.budget || "",
+    currency: s.currency || "USD",
+    no_sulphates: s.no_sulphates === "true",
+    no_silicones: s.no_silicones === "true",
+    no_parabens: s.no_parabens === "true",
+  };
+  const status = document.getElementById("status");
+  try {
+    const res = await fetch("/api/recommend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const d = await res.json();
+    if (!res.ok) { status.textContent = d.error || "Something went wrong. Try again."; return; }
+    if (!d.results.length) { status.textContent = "No matches. Try relaxing your answers or choosing fewer filters."; return; }
+    status.textContent = "";
+    d.results.forEach(r => results.appendChild(addResult(r)));
+  } catch {
+    status.textContent = "Could not reach the server. Try again.";
+  }
+})();
+</script>
+</body>
+</html>

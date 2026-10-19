@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz" class="active">Quiz</a><a href="/browse">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro">
+      <h2>What’s your hair porosity?</h2>
+      <p>How quickly does your hair absorb water?</p>
+    </section>
+    <form id="q" class="opt3">
+      <!-- filled by JS -->
+    </form>
+  </main>
+  <div class="controls">
+    <a class="next" id="next" href="/quiz/concerns">Next →</a>
+    <a class="back" href="/quiz">← Back</a>
+  </div>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script src="/assets/quiz.js"></script>
+<script>
+const OPTS = [
+  { v: "low", label: "Low Porosity", img: "/assets/porosity/low.jpg",
+    desc: "Your hair absorbs water slowly and your hair strands are smooth." },
+  { v: "medium", label: "Medium Porosity", img: "/assets/porosity/med.jpg",
+    desc: "Your hair absorbs water moderately and your hair strands are normal." },
+  { v: "high", label: "High Porosity", img: "/assets/porosity/high.jpg",
+    desc: "Your hair absorbs water quickly and your hair strands are coarse." },
+];
+const s = Quiz.init(["porosity"]);
+const saved = s.porosity || "";
+const form = document.getElementById("q");
+for (const o of OPTS) {
+  const lab = document.createElement("label");
+  lab.className = "opt" + (o.v === saved ? " selected" : "");
+  const inp = document.createElement("input");
+  inp.type = "radio"; inp.name = "porosity"; inp.value = o.v; inp.required = true;
+  inp.checked = o.v === saved;
+  const img = document.createElement("img");
+  img.className = "thumb"; img.src = o.img; img.alt = o.label; img.loading = "lazy";
+  const name = document.createElement("span"); name.className = "name"; name.textContent = o.label;
+  const desc = document.createElement("span"); desc.className = "desc"; desc.textContent = o.desc;
+  lab.append(inp, img, name, desc);
+  inp.addEventListener("change", () => {
+    form.querySelectorAll(".opt").forEach(x => x.classList.remove("selected"));
+    lab.classList.add("selected");
+  });
+  form.appendChild(lab);
+}
+document.getElementById("next").addEventListener("click", (e) => {
+  const picked = form.querySelector("input:checked");
+  if (!picked) { e.preventDefault(); return; }
+  Quiz.set({ porosity: picked.value });
+});
+</script>
+</body>
+</html>

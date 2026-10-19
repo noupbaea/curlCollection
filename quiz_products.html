@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz" class="active">Quiz</a><a href="/browse">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro">
+      <h2>Are you looking for a specific kind of product?</h2>
+      <p>Choose all that apply.</p>
+    </section>
+    <div class="prod-layout">
+      <label class="prod-any" id="anyOpt"><input type="checkbox" id="anyProd"><span>Any Products</span></label>
+      <div class="prod-sep" role="separator" aria-hidden="true"></div>
+      <div class="prod-list" id="prodList">
+        <label class="prod-opt"><input type="checkbox" value="shampoo"><span>Shampoo<small class="mdesc">Cleanses hair</small></span></label>
+        <label class="prod-opt"><input type="checkbox" value="oil"><span>Oil<small class="mdesc">Retains moisture and gives shine</small></span></label>
+        <label class="prod-opt"><input type="checkbox" value="conditioner"><span>Conditioner<small class="mdesc">Moisturizes hair after shampoo</small></span></label>
+        <label class="prod-opt"><input type="checkbox" value="styler"><span>Styler<small class="mdesc">Products like gels, mousses, and creams</small></span></label>
+        <label class="prod-opt"><input type="checkbox" value="leave_in"><span>Leave-in<small class="mdesc">No-rinse moisture after showering</small></span></label>
+        <label class="prod-opt"><input type="checkbox" value="ayurvedic"><span>Ayurvedic<small class="mdesc">Formulas based on traditional Indian medicine</small></span></label>
+      </div>
+    </div>
+  </main>
+  <div class="controls">
+    <a class="next" id="next" href="/quiz/budget">Next →</a>
+    <a class="back" href="/quiz/concerns">← Back</a>
+  </div>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script src="/assets/quiz.js"></script>
+<script>
+const s = Quiz.init(["category", "any"]);
+const anyProd = document.getElementById("anyProd");
+const anyOpt = document.getElementById("anyOpt");
+const catBoxes = [...document.querySelectorAll(".prod-opt input")];
+const prodOpts = [...document.querySelectorAll(".prod-opt")];
+const savedCats = Array.isArray(s.category) ? s.category : (s.category ? [s.category] : []);
+// Restore a prior selection; otherwise leave everything unchecked (all normal colour).
+if (s.any === "1") anyProd.checked = true;
+else if (savedCats.length) catBoxes.forEach(b => b.checked = savedCats.includes(b.value));
+sync();
+
+function sync() {
+  const anySelected = anyProd.checked;
+  const someCat = catBoxes.some(b => b.checked);
+  if (anySelected) {            // Any selected -> grey out specific options
+    anyOpt.classList.remove("dim");
+    prodOpts.forEach(o => o.classList.add("dim"));
+  } else if (someCat) {         // specific selected -> grey out Any
+    anyOpt.classList.add("dim");
+    prodOpts.forEach(o => o.classList.remove("dim"));
+  } else {                      // nothing selected -> all normal colour
+    anyOpt.classList.remove("dim");
+    prodOpts.forEach(o => o.classList.remove("dim"));
+  }
+}
+anyProd.addEventListener("change", () => {
+  if (anyProd.checked) catBoxes.forEach(b => b.checked = false);
+  sync();
+});
+catBoxes.forEach(b => b.addEventListener("change", () => {
+  if (b.checked) anyProd.checked = false;
+  sync();
+}));
+document.getElementById("next").addEventListener("click", () => {
+  const cats = catBoxes.filter(b => b.checked).map(b => b.value);
+  Quiz.set(anyProd.checked || cats.length === 0 ? { category: "", any: "1" } : { category: cats, any: "0" });
+});
+</script>
+</body>
+</html>

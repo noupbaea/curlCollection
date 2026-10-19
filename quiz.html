@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz" class="active">Quiz</a><a href="/browse">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro">
+      <h2>How curly is your hair?</h2>
+      <p>How does your hair curl naturally?</p>
+    </section>
+    <form id="q" class="option-grid" action="/quiz/porosity" method="get">
+      <!-- filled by JS -->
+    </form>
+    <div class="nav-row">
+      <a class="next" id="next" href="/quiz/porosity">Next →</a>
+    </div>
+  </main>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script src="/assets/quiz.js"></script>
+<script>
+const TYPES = ["2A","2B","2C","3A","3B","3C","4A","4B","4C"];
+const s = Quiz.init(["hair_type"]);
+const saved = s.hair_type || "";
+const form = document.getElementById("q");
+for (const [i, t] of TYPES.entries()) {
+  const lab = document.createElement("label");
+  lab.className = "option" + (t === saved ? " selected" : "");
+  const inp = document.createElement("input");
+  inp.type = "radio"; inp.name = "hair_type"; inp.value = t; inp.required = true;
+  inp.checked = t === saved;
+  const img = document.createElement("img");
+  img.className = "thumb"; img.src = "/assets/hairTypes/jpg/" + t.toLowerCase() + ".jpg"; img.alt = "Hair type " + t; img.loading = "lazy";
+  const label = document.createElement("span");
+  label.className = "label"; label.textContent = t;
+  lab.append(inp, img, label);
+  inp.addEventListener("change", () => {
+    form.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+    lab.classList.add("selected");
+  });
+  form.appendChild(lab);
+}
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const picked = form.querySelector("input:checked");
+  if (!picked) return;
+  Quiz.set({ hair_type: picked.value });
+  location.href = "/quiz/porosity";
+});
+document.getElementById("next").addEventListener("click", (e) => {
+  const picked = form.querySelector("input:checked");
+  if (!picked) { e.preventDefault(); return; }
+  Quiz.set({ hair_type: picked.value });
+});
+</script>
+</body>
+</html>

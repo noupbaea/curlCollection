@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz">Quiz</a><a href="/browse" class="active">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro"><h2>Browse</h2></section>
+    <div class="browse-layout">
+      <aside class="filters" id="filters"><!-- filled by JS --></aside>
+      <div class="browse-results" id="results"><div class="empty">Loading products…</div></div>
+    </div>
+  </main>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script>
+const HAIR_TYPES = ["2A","2B","2C","3A","3B","3C","4A","4B","4C"];
+const POROSITY = ["Low","Medium","High"];
+const CONCERNS = [["dryness","Dryness"],["frizz","Frizz"],["definition","Definition"],["moisture","Moisture"],["breakage","Breakage"]];
+const PRODUCTS = [["any","Any"],["shampoo","Shampoo"],["conditioner","Conditioner"],["leave_in","Leave-in"],["oil","Oil"],["styler","Styler"],["ayurvedic","Ayurvedic"]];
+const AVOID = [["no_sulphates","Sulphates"],["no_silicones","Silicones"],["no_parabens","Parabens"]];
+const state = { hair_type: null, porosity: null, concerns: new Set(), categories: new Set(), any: true, budget: "", currency: "USD", avoid: new Set() };
+const $el = id => document.getElementById(id);
+const safe = u => /^https?:\/\//i.test(u || "") ? u : null;
+
+function buildFilters() {
+  const f = $el("filters");
+  const h3 = document.createElement("h3"); h3.className = "filters-title"; h3.textContent = "Filters";
+  f.appendChild(h3);
+  // Curl Type
+  f.appendChild(group("Curl Type", null, () => {
+    const row = document.createElement("div"); row.className = "ht-grid";
+    HAIR_TYPES.forEach(t => {
+      const a = document.createElement("a"); a.href = "#"; a.textContent = t;
+      a.dataset.ht = t;
+      a.addEventListener("click", (e) => { e.preventDefault(); toggleHT(t, a); });
+      row.appendChild(a);
+    });
+    return row;
+  }));
+  // Porosity
+  f.appendChild(group("Porosity", null, () => {
+    const row = document.createElement("div"); row.className = "links";
+    POROSITY.forEach(p => {
+      const a = document.createElement("a"); a.href = "#"; a.textContent = p;
+      a.dataset.po = p.toLowerCase();
+      a.addEventListener("click", (e) => { e.preventDefault(); togglePo(p.toLowerCase(), a); });
+      row.appendChild(a);
+    });
+    return row;
+  }));
+  // Concerns
+  f.appendChild(group("Concerns", null, checkboxGroup("concerns", CONCERNS)));
+  // Products
+  f.appendChild(group("Products", null, checkboxGroup("categories", PRODUCTS)));
+  // Max Price
+  f.appendChild(group("Max Price", null, () => {
+    const box = document.createElement("div");
+    const inp = document.createElement("input"); inp.type = "number"; inp.min = "1"; inp.placeholder = "0"; inp.ariaLabel = "Max price";
+    inp.value = state.budget;
+    inp.addEventListener("input", () => { state.budget = inp.value; debounceRun(); });
+    const cur = document.createElement("select"); cur.ariaLabel = "Currency";
+    ["USD", "GBP"].forEach(c => { const o = document.createElement("option"); o.value = c; o.textContent = c; cur.appendChild(o); });
+    cur.value = state.currency;
+    cur.addEventListener("change", () => { state.currency = cur.value; debounceRun(); });
+    box.append(inp, cur);
+    return box;
+  }));
+  // Avoid
+  f.appendChild(group("Avoid", null, checkboxGroup("avoid", AVOID)));
+}
+
+function group(title, cls, builder) {
+  const div = document.createElement("div"); div.className = "filter-group";
+  const h = document.createElement("h4"); h.className = "fg-title"; h.textContent = title;
+  div.appendChild(h); div.appendChild(builder());
+  return div;
+}
+
+function checkboxGroup(kind, items) {
+  return () => {
+    const div = document.createElement("div");
+    items.forEach(([val, label]) => {
+      const lab = document.createElement("label");
+      const cb = document.createElement("input"); cb.type = "checkbox";
+      cb.dataset[kind] = val;
+      const span = document.createElement("span"); span.textContent = label;
+      lab.append(cb, span); div.appendChild(lab);
+      cb.addEventListener("change", () => {
+        if (kind === "concerns") { cb.checked ? state.concerns.add(val) : state.concerns.delete(val); }
+        else if (kind === "categories") {
+          if (val === "any") { if (cb.checked) { state.categories.clear(); state.any = true; syncCats(); } }
+          else { cb.checked ? state.categories.add(val) : state.categories.delete(val); if (state.categories.size) state.any = false; else state.any = true; }
+        }
+        else if (kind === "avoid") { cb.checked ? state.avoid.add(val) : state.avoid.delete(val); }
+        debounceRun();
+      });
+    });
+    return div;
+  };
+}
+
+function syncCats() {
+  document.querySelectorAll('input[data-categories]').forEach(cb => {
+    const v = cb.dataset.categories;
+    cb.checked = v === "any" ? state.any : state.categories.has(v);
+  });
+}
+
+function toggleHT(t, a) {
+  state.hair_type = state.hair_type === t ? null : t;
+  document.querySelectorAll('a[data-ht]').forEach(x => x.classList.toggle("active", x.dataset.ht === state.hair_type));
+  debounceRun();
+}
+function togglePo(p, a) {
+  state.porosity = state.porosity === p ? null : p;
+  document.querySelectorAll('a[data-po]').forEach(x => x.classList.toggle("active", x.dataset.po === state.porosity));
+  debounceRun();
+}
+
+let timer;
+function debounceRun() { clearTimeout(timer); timer = setTimeout(run, 250); }
+
+async function run() {
+  const results = $el("results");
+  results.innerHTML = '<div class="empty">Loading products…</div>';
+  const body = {
+    hair_type: state.hair_type || "", porosity: state.porosity || "",
+    concerns: [...state.concerns],
+    category: state.any ? "any" : [...state.categories][0] || "",
+    budget: state.budget || "", currency: state.currency,
+    no_sulphates: state.avoid.has("no_sulphates"),
+    no_silicones: state.avoid.has("no_silicones"),
+    no_parabens: state.avoid.has("no_parabens"),
+  };
+  try {
+    const res = await fetch("/api/browse", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const d = await res.json();
+    if (!res.ok) { results.innerHTML = '<div class="empty">' + (d.error || "Error") + "</div>"; return; }
+    results.innerHTML = "";
+    if (!d.results.length) { results.innerHTML = '<div class="empty">No products match your filters.</div>'; return; }
+    d.results.forEach(r => results.appendChild(card(r)));
+  } catch {
+    results.innerHTML = '<div class="empty">Could not reach the server.</div>';
+  }
+}
+
+function card(r) {
+  const c = document.createElement("article"); c.className = "product-card";
+  const img = document.createElement("img");
+  const u = safe(r.image);
+  img.alt = "";
+  if (u) { img.src = u; img.loading = "lazy"; img.referrerPolicy = "no-referrer"; }
+  else img.style.background = "#d9d9d9";
+  const name = document.createElement("h3"); name.className = "pname"; name.textContent = r.name || "Unnamed product";
+  const desc = document.createElement("p"); desc.className = "pdesc"; desc.textContent = (r.description || "").slice(0, 80) + ((r.description||"").length > 80 ? "…" : "");
+  const price = document.createElement("p"); price.className = "pprice"; price.textContent = r.price || "";
+  const brand = document.createElement("p"); brand.className = "ptag"; brand.textContent = r.brand || "";
+  c.append(img, name, desc, price, brand);
+  return c;
+}
+
+buildFilters();
+run();
+</script>
+</body>
+</html>

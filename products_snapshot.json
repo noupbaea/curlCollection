@@ -1,0 +1,174 @@
+[
+ {
+  "id": "99ca3f99-a636-4198-9cbe-a0a6d29f2f48",
+  "name": "Curl Enhance Refresher Spray, 12oz",
+  "brand": {
+   "id": "4a45f351-4e8b-47d6-bdfb-4e32f2ed20a3",
+   "name": "Alaffia",
+   "is_black_owned": true,
+   "trading": true,
+   "black_managed": true,
+   "logo_url": "https://www.alaffia.com/cdn/shop/files/logo_-6.png?v=1690983397"
+  },
+  "category": "leave_in",
+  "subcategory": [
+   "cream"
+  ],
+  "description": "Made with fair trade and unrefined shea butter from cooperatives in West Africa, calendula extract and aloe, our Curl Enhance Refresher Spray locks in moisture and refreshes curl pattern without re-washing. Great to use throughout the day to revive and retract expanded curls and minimize frizz. For all curl types.",
+  "price_range": {
+   "max": 14.99,
+   "min": 14.99,
+   "currency": "USD"
+  },
+  "regions": [
+   "US"
+  ],
+  "images": [
+   "https://www.alaffia.com/cdn/shop/products/608_BC_Enhance-RefresherSpray_12oz_F_1.jpg?v=1654754279&width=1280"
+  ],
+  "buy_url": "https://www.alaffia.com/collections/beautiful-curls/products/curl-reviving-tonic-12fl-oz",
+  "is_active": true,
+  "hair_profile": {
+   "hair_types": [
+    "2A",
+    "2B",
+    "2C",
+    "3A",
+    "3B",
+    "3C",
+    "4A",
+    "4B",
+    "4C"
+   ],
+   "porosity": [
+    "low",
+    "medium",
+    "high"
+   ],
+   "concerns": [
+    "dryness",
+    "frizz",
+    "definition",
+    "moisture"
+   ],
+   "texture": [
+    "fine",
+    "medium",
+    "coarse"
+   ]
+  },
+  "ingredients": null
+ },
+ {
+  "id": "8ec192a3-6211-4845-a343-2e0c3e980b94",
+  "name": "Lemongrass Hold It Styling Gel",
+  "brand": {
+   "id": "51cc09b9-429d-40ff-b845-c3c0a46997c5",
+   "name": "Alikay Naturals",
+   "is_black_owned": true,
+   "trading": true,
+   "black_managed": true,
+   "logo_url": null
+  },
+  "category": "styler",
+  "subcategory": [
+   "gel"
+  ],
+  "description": "What makes Hold It stand out is its humidity-resistant formula — once it sets, it stays. Your style holds through sweat, humidity, and active days without losing definition or breaking down. The wheat protein fortifies each strand from the inside out reducing breakage over time, while lemongrass oil soothes the scalp and adds a fresh, light citrus scent that isn't overpowering.",
+  "price_range": {
+   "max": 12.99,
+   "min": 12.99,
+   "currency": "USD"
+  },
+  "regions": [
+   "US",
+   "UK"
+  ],
+  "images": [
+   "https://cdn11.bigcommerce.com/s-xdujedzl24/images/stencil/1200x1200/products/113/379/Hold_it_and_Stylig_Gel__27214.1777369772.jpg?c=1"
+  ],
+  "buy_url": "https://alikaynaturals.com/products/lemongrass-hold-it-styling-gel",
+  "is_active": true,
+  "hair_profile": {
+   "hair_types": [
+    "3A",
+    "3B",
+    "3C",
+    "4A",
+    "4B",
+    "4C"
+   ],
+   "porosity": [
+    "medium",
+    "high"
+   ],
+   "concerns": [
+    "breakage",
+    "definition",
+    "moisture"
+   ],
+   "texture": [
+    "fine",
+    "medium",
+    "coarse"
+   ]
+  },
+  "ingredients": null
+ },
+ {
+  "id": "55eaa93d-9a5d-4dbd-a203-97ba38335597",
+  "name": "Goddess Strength True Stretch Defining Cream",
+  "brand": {
+   "id": "54821279-162e-4994-bf94-6302e14f313e",
+   "name": "Carol's Daughter",
+   "is_black_owned": true,
+   "trading": true,
+   "black_managed": true,
+   "logo_url": null
+  },
+  "category": "styler",
+  "subcategory": [
+   "curl_cream"
+  ],
+  "description": "This elongating cream gifts your hair with goddess-like length and strength. Enjoy stretched and defined curls for up to 48 hours! Blended with Castor Oil, Black Cumin Seed Oil and Ginger, this rich formula deeply moisturizes and helps reinforce strands so hair looks longer and smoother with every application.",
+  "price_range": {
+   "max": 13.99,
+   "min": 13.99,
+   "currency": "USD"
+  },
+  "regions": [
+   "US",
+   "UK"
+  ],
+  "images": [
+   "https://carolsdaughter.com/cdn/shop/files/Carols-Daughter-Goddess-Strength-True-Stretch-1-0820645011779_8b096b7f-5d52-433c-82aa-acaecf389371.jpg?v=1752079263&width=1536"
+  ],
+  "buy_url": "https://carolsdaughter.com/products/goddess-strength-true-stretch-defining-cream",
+  "is_active": true,
+  "hair_profile": {
+   "hair_types": [
+    "3A",
+    "3B",
+    "3C",
+    "4A",
+    "4B",
+    "4C"
+   ],
+   "porosity": [
+    "medium",
+    "high"
+   ],
+   "concerns": [
+    "frizz",
+    "definition",
+    "moisture"
+   ],
+   "texture": [
+    "fine",
+    "medium",
+    "coarse"
+   ]
+  },
+  "ingredients": null
+ }
+]

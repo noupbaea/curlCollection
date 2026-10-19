@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz" class="active">Quiz</a><a href="/browse">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro">
+      <h2>Would you like to exclude these products?</h2>
+      <p>Choose all that apply.</p>
+    </section>
+    <div class="avoid-row">
+      <div class="avoid-item" id="av0">
+        <label><input type="checkbox" name="no_sulphates"> Sulphates</label>
+        <div class="pop" role="tooltip"></div>
+      </div>
+      <div class="avoid-item" id="av1">
+        <label><input type="checkbox" name="no_silicones"> Silicones</label>
+        <div class="pop" role="tooltip"></div>
+      </div>
+      <div class="avoid-item" id="av2">
+        <label><input type="checkbox" name="no_parabens"> Parabens</label>
+        <div class="pop" role="tooltip"></div>
+      </div>
+    </div>
+  </main>
+  <div class="controls">
+    <a class="next" id="next" href="/quiz/results">Next →</a>
+    <a class="back" href="/quiz/budget">← Back</a>
+  </div>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script src="/assets/quiz.js"></script>
+<script>
+const DATA = [
+  { title: "Sulphates", cons: ["Can strip away healthy oils and irritate scalp.", "Can cause frizz and even breakage."],
+    pros: ["Breaks down dirt and oils.", "Creates a rich lather."] },
+  { title: "Silicones", cons: ["Certain silicones can be hard to wash out.", "Certain silicones can weigh curls down."],
+    pros: ["Can help retain moisture and prevent frizz.", "Help to soften, smooth, and add shine to hair."] },
+  { title: "Parabens", cons: ["Can cause endocrine disruption, reproductive harm, and cancer."],
+    pros: ["Less expensive preservative than alternatives.", "Prevents bacteria and mould growth.", "Increases product shelf life."] },
+];
+const s = Quiz.init(["no_sulphates", "no_silicones", "no_parabens"]);
+const toBool = v => v === "true" || v === true || v === "1";
+const boxes = [...document.querySelectorAll(".avoid-item input")];
+DATA.forEach((c, i) => {
+  const pop = document.querySelector(`#av${i} .pop`);
+  const h = document.createElement("h3"); h.textContent = c.title;
+  const p = document.createElement("p"); p.className = "pros"; p.textContent = "Pros:";
+  const ul = document.createElement("ul"); ul.className = "pros-list";
+  c.pros.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  const ct = document.createElement("p"); ct.className = "cons-title"; ct.textContent = "Cons:";
+  const cul = document.createElement("ul"); cul.className = "cons-list";
+  c.cons.forEach(t => { const li = document.createElement("li"); li.textContent = t; cul.appendChild(li); });
+  pop.append(h, p, ul, ct, cul);
+  boxes[i].checked = toBool(s[c.title === "Sulphates" ? "no_sulphates" : c.title === "Silicones" ? "no_silicones" : "no_parabens"]);
+});
+document.getElementById("next").addEventListener("click", () => {
+  const g = n => !!document.querySelector(`input[name=${n}]`).checked;
+  Quiz.set({ no_sulphates: String(g("no_sulphates")), no_silicones: String(g("no_silicones")), no_parabens: String(g("no_parabens")) });
+});
+</script>
+</body>
+</html>

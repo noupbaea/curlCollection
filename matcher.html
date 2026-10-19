@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curl Match: find products for your hair</title>
+<style>
+:root{--bg:#f1edf5;--panel:#fff;--ink:#27152f;--muted:#6b5b75;--line:#d9cfe0;--accent:#0f6b5e;--accent-ink:#fff;--gold:#f0c24b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1022;--panel:#27152f;--ink:#f1e9f5;--muted:#b9a9c4;--line:#44304f;--accent:#58c4af;--accent-ink:#10231f;--gold:#f0c24b;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700;line-height:1.15;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 64px}
+header p{color:var(--muted);max-width:52ch;margin:10px 0 0}
+h1{font-size:clamp(2rem,5vw,3rem)}
+main{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:28px;margin-top:28px;align-items:start}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+fieldset{border:0;padding:0;margin:0 0 20px}
+legend{font-weight:600;padding:0;margin-bottom:8px}
+.hint{color:var(--muted);font-size:.85rem;margin:-4px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid label{position:relative}
+.grid input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.grid span{display:block;text-align:center;padding:14px 0;border:1.5px solid var(--line);border-radius:10px;font:700 1.25rem "Iowan Old Style",Palatino,Georgia,serif}
+.grid input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.grid input:focus-visible+span,button:focus-visible,select:focus-visible,input[type=number]:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pills span{padding:7px 14px;font:500 .95rem system-ui,sans-serif;border-radius:99px}
+.grid.pills{display:flex}
+.row{display:flex;gap:8px}
+select,input[type=number]{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit}
+.check{display:flex;gap:8px;align-items:center;margin:6px 0}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font:700 1rem system-ui,sans-serif;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+#out{display:grid;gap:14px}
+.card{display:grid;grid-template-columns:110px 1fr;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card img,.ph{width:110px;height:110px;object-fit:cover;border-radius:10px;background:var(--line)}
+.card h2{font-size:1.15rem}
+.meta{color:var(--muted);font-size:.9rem;margin:2px 0 6px}
+.tag{display:inline-block;font-size:.8rem;padding:2px 9px;border-radius:99px;border:1px solid var(--line);margin:0 6px 6px 0}
+.tag.own{background:var(--gold);color:#3a2a00;border-color:var(--gold)}
+.card p{margin:6px 0;font-size:.92rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card a{color:var(--accent);font-weight:600}
+.note{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:22px;color:var(--muted)}
+@media(max-width:480px){.card{grid-template-columns:80px 1fr}.card img,.ph{width:80px;height:80px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Curl Match</h1>
+  <p>Tell us about your hair and we’ll shortlist products made for it, drawn from the Black Haircare API.</p>
+</header>
+<main>
+<form id="f">
+  <fieldset>
+    <legend>Curl type</legend>
+    <p class="hint">Rows are wavy (2), curly (3) and coily (4).</p>
+    <div class="grid" id="types"></div>
+  </fieldset>
+  <fieldset>
+    <legend>Porosity</legend>
+    <p class="hint">How fast your hair absorbs water. Not sure? Low dries slowly, high dries fast.</p>
+    <div class="grid pills" id="por"></div>
+  </fieldset>
+  <fieldset>
+    <legend>Concerns (optional)</legend>
+    <div class="grid pills" id="con"></div>
+  </fieldset>
+  <fieldset>
+    <legend>Product type</legend>
+    <select id="cat"><option value="">Any</option></select>
+  </fieldset>
+  <fieldset>
+    <legend>Budget (optional)</legend>
+    <div class="row"><input type="number" id="bud" min="1" step="1" placeholder="Max price" aria-label="Maximum price"><select id="cur" aria-label="Currency" style="width:90px"><option>USD</option><option>GBP</option></select></div>
+  </fieldset>
+  <fieldset>
+    <legend>Leave out</legend>
+    <label class="check"><input type="checkbox" id="sul"> Sulphates</label>
+    <label class="check"><input type="checkbox" id="sil"> Silicones</label>
+    <label class="check"><input type="checkbox" id="par"> Parabens</label>
+  </fieldset>
+  <button id="go" type="submit">Find products</button>
+</form>
+<section id="out" aria-live="polite"><div class="note">Pick your curl type and porosity, then choose Find products.</div></section>
+</main>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const safe=u=>/^https?:\/\//i.test(u||"")?u:null;
+function choices(box,name,type,vals,req){
+  vals.forEach((v,i)=>{const l=el("label"),inp=el("input"),s=el("span",null,v.label||v);
+    inp.type=type;inp.name=name;inp.value=v.value||v;if(req&&i===0)inp.required=true;l.append(inp,s);box.append(l)});
+}
+choices($("types"),"ht","radio",["2A","2B","2C","3A","3B","3C","4A","4B","4C"],true);
+choices($("por"),"po","radio",[{value:"low",label:"Low"},{value:"medium",label:"Medium"},{value:"high",label:"High"}],true);
+choices($("con"),"co","checkbox",["dryness","frizz","definition","moisture","breakage"].map(c=>({value:c,label:c[0].toUpperCase()+c.slice(1)})));
+["shampoo","conditioner","leave_in","oil","treatment","styler","ayurvedic","other"].forEach(c=>{
+  const o=el("option",null,c.replace("_","-").replace(/^./,x=>x.toUpperCase()));o.value=c;$("cat").append(o)});
+
+function card(r){
+  const c=el("article","card"),u=safe(r.image);
+  if(u){const i=el("img");i.src=u;i.alt="";i.loading="lazy";i.referrerPolicy="no-referrer";c.append(i)}else c.append(el("div","ph"));
+  const b=el("div");b.append(el("h2",null,r.name||"Unnamed product"));
+  b.append(el("div","meta",[r.brand,r.category&&r.category.replace("_","-"),r.price].filter(Boolean).join(", ")));
+  if(r.black_owned)b.append(el("span","tag own","Black-owned brand"));
+  r.matched.forEach(m=>b.append(el("span","tag","Helps with "+m)));
+  if(r.description)b.append(el("p",null,r.description));
+  const l=safe(r.buy_url);if(l){const a=el("a",null,"View product");a.href=l;a.target="_blank";a.rel="noopener noreferrer";b.append(a)}
+  c.append(b);return c;
+}
+$("f").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const q=n=>document.querySelector(`input[name=${n}]:checked`);
+  const body={hair_type:q("ht").value,porosity:q("po").value,
+    concerns:[...document.querySelectorAll("input[name=co]:checked")].map(x=>x.value),
+    category:$("cat").value,budget:$("bud").value,currency:$("cur").value,
+    no_sulphates:$("sul").checked,no_silicones:$("sil").checked,no_parabens:$("par").checked};
+  const out=$("out"),btn=$("go");btn.disabled=true;btn.textContent="Searching…";
+  try{
+    const res=await fetch("/api/recommend",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const d=await res.json();out.replaceChildren();
+    if(!res.ok){out.append(el("div","note",d.error||"Something went wrong. Try again."));return}
+    if(!d.results.length){out.append(el("div","note","No matches. Try fewer concerns, a higher budget, or a different product type."));return}
+    out.append(el("div","meta","Showing "+d.results.length+" of "+d.considered+" products checked for "+body.hair_type+" hair."));
+    d.results.forEach(r=>out.append(card(r)));
+  }catch{out.replaceChildren(el("div","note","Could not reach the server. Check your connection and try again."))}
+  finally{btn.disabled=false;btn.textContent="Find products"}
+});
+</script>
+</body>
+</html>

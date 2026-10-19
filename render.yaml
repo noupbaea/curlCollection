@@ -1,0 +1,19 @@
+# Render Blueprint for Curl Collection.
+# Deploy from the Render dashboard or with:  render blueprint launch
+# Root directory is the repo root (where this file lives).
+
+services:
+  - type: web
+    name: curl-collection
+    runtime: python
+    plan: free
+    buildCommand: ""  # no build step needed (pure stdlib)
+    startCommand: python3 server.py
+    healthCheckPath: /health
+    envVars:
+      # BHA_API_KEY is intentionally NOT committed here. Set it in the Render
+      # dashboard under Environment -> BHA_API_KEY with your real key.
+      # BHA_OFFLINE is 0 (live mode) by default; set to 1 to serve the saved
+      # product list from products_snapshot.json without making API calls.
+      - key: BHA_OFFLINE
+        value: "0"

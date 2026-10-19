@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curl Collection</title>
+<style>
+:root{--bg:#fffcfa;--ink:#241100;--muted:#7a5a3a}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body>div{max-width:1440px;margin:0 auto;padding:0 0 40px;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:64px;padding:48px 14px 0}
+.brand{display:flex;align-items:center;gap:16px;margin-left:159px}
+.brand img{width:54px;height:66px;display:block}
+.brand h1{font-size:40px;font-weight:700;letter-spacing:-.01em;margin:0;white-space:nowrap}
+nav{margin-left:500px;display:flex;gap:40px}
+nav a{font-size:20px;color:var(--ink);text-decoration:none}
+nav a:hover{text-decoration:underline}
+main{flex:1;padding:0 333px}
+.hero{padding:156px 0 0;max-width:690px}
+.hero p{margin:0;font-size:32px;font-weight:500;line-height:1.35}
+.media{display:flex;gap:81px;align-items:flex-start;margin-top:196px}
+.media-col{display:flex;flex-direction:column}
+.media-col .mlink{font-size:20px;font-weight:600;color:var(--ink);text-decoration:underline;text-underline-offset:3px;margin-bottom:20px}
+.media-col .mlink:hover{color:var(--muted)}
+.media-col img{width:347px;height:233px;object-fit:cover;display:block}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:56px 333px 0}
+footer a{color:var(--ink);text-decoration:underline}
+@media(max-width:760px){
+  header{flex-wrap:wrap;gap:20px;padding-left:24px}
+  nav{margin-left:0}
+  main{padding:0 24px}
+  .hero{padding-top:80px}
+  .media{margin-top:80px;flex-direction:column;gap:48px}
+  .media-col img{width:100%;height:auto}
+  footer{padding:40px 24px 0}
+}
+</style>
+</head>
+<body>
+<div>
+<header>
+  <div class="brand">
+    <img src="/assets/logo.svg" alt="Curl Collection logo">
+    <h1>Curl Collection</h1>
+  </div>
+  <nav>
+    <a href="/quiz">Quiz</a>
+    <a href="/browse">Browse</a>
+  </nav>
+</header>
+<main>
+  <section class="hero">
+    <p>Unsponsored, unaffiliated product-browsing to perfect your hair routine.</p>
+  </section>
+  <div class="media">
+    <div class="media-col">
+      <a class="mlink" href="/quiz">Take the quiz for some guidance</a>
+      <img src="/assets/repPhotos/quiz.webp" alt="Take the quiz for some guidance">
+    </div>
+    <div class="media-col">
+      <a class="mlink" href="/browse">Or browse and filter for products yourself</a>
+      <img src="/assets/repPhotos/browse.webp" alt="Browse and filter products">
+    </div>
+  </div>
+</main>
+<footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+</body>
+</html>

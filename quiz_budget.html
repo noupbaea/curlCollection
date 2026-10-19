@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz — Curl Collection</title>
+<link rel="stylesheet" href="/assets/curls.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/logo.svg" alt="Curl Collection logo"><h1>Curl Collection</h1></a>
+    <nav class="site-nav"><a href="/quiz" class="active">Quiz</a><a href="/browse">Browse</a></nav>
+  </header>
+  <main class="site-main">
+    <section class="intro">
+      <h2>What’s your maximum price per product?</h2>
+      <p>This question is optional.</p>
+    </section>
+    <form id="q" class="budget-row">
+      <label class="budget-field">
+        <span class="bhint">Maximum price</span>
+        <input class="budget-input" type="number" id="budget" min="1" step="1" placeholder="Max Price" aria-label="Maximum price">
+      </label>
+      <label class="budget-field">
+        <span class="bhint">Currency</span>
+        <select class="budget-input budget-cur" id="currency" aria-label="Currency">
+          <option value="USD" selected>USD</option>
+          <option value="GBP">GBP</option>
+        </select>
+      </label>
+    </form>
+  </main>
+  <div class="controls">
+    <a class="next" id="next" href="/quiz/avoid">Next →</a>
+    <a class="back" href="/quiz/products">← Back</a>
+  </div>
+  <footer>Powered by <a href="https://blackhairapi.com" target="_blank" rel="noopener noreferrer">www.blackhairapi.com</a></footer>
+</div>
+<script src="/assets/quiz.js"></script>
+<script>
+const s = Quiz.init(["budget", "currency"]);
+const budgetEl = document.getElementById("budget");
+const curEl = document.getElementById("currency");
+if (s.budget) budgetEl.value = s.budget;
+if (s.currency) curEl.value = s.currency;
+document.getElementById("next").addEventListener("click", () => {
+  Quiz.set({ budget: budgetEl.value || "", currency: curEl.value });
+});
+</script>
+</body>
+</html>

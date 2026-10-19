@@ -1,0 +1,3 @@
+# Curl Collection uses only the Python standard library (http.server, json, urllib).
+# This file is intentionally empty; its presence tells Render to use the Python
+# buildpack for the service. No third-party packages are required.
